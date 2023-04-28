@@ -8,6 +8,8 @@ import Tabs from "react-bootstrap/Tabs";
 import axios from "../axios.js";
 import ListGroup from "react-bootstrap/ListGroup";
 import Table from "react-bootstrap/Table";
+import { Button } from "@mui/material";
+
 export const FullPost = () => {
   const [data, setData] = React.useState();
   const [isLoading, setLoading] = React.useState(true);
@@ -47,6 +49,14 @@ export const FullPost = () => {
         isFullPost
       ></Post>
 
+      <Button variant="contained">
+        <a
+          style={{ color: "#fff", textDecoration: "none" }}
+          href={`http://localhost:2000/invoice/${id}`}
+        >
+          скачать отчет
+        </a>
+      </Button>
       <Tabs
         defaultActiveKey="profile"
         id="uncontrolled-tab-example"

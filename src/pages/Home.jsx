@@ -13,6 +13,8 @@ import { fetchPosts } from "../redux/slices/posts.js";
 import { useNavigate } from "react-router-dom";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 export const Home = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.data);
@@ -30,7 +32,7 @@ export const Home = () => {
 
   React.useEffect(() => {
     dispatch(fetchPosts());
-    console.log(posts);
+    console.log(userData);
   }, []);
   if (!userData) {
     navigate("/login");
