@@ -44,9 +44,9 @@ export const Registration = () => {
     }
   };
 
-  if (isAuth) {
-    return <Navigate to="/" />;
-  }
+  // if (isAuth) {
+  //   return <Navigate to="/" />;
+  // }
 
   return (
     <Paper classes={{ root: styles.root }}>

@@ -155,9 +155,112 @@ export const AddPost = () => {
     }
   }, []);
 
+  const [validationsMessages, setValidationsMessages] = React.useState({
+    seriesPasport: "",
+    numberPasport: "",
+    dateIssue: "",
+    unitCode: "",
+    bornDate: "",
+    SNILS: "",
+  });
+
+  const [validationFlag, setValidationFlag] = React.useState({
+    seriesPasport: false,
+    numberPasport: false,
+    dateIssue: false,
+    unitCode: false,
+    bornDate: false,
+    SNILS: false,
+  });
+
+  // class Validator {
+  //   static seriesPasportValidator(seriesPasport) {
+  //     if (seriesPasport.length !== 4) {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         seriesPasport: "серия паспорта должна быть длиной в 4 символа",
+  //       });
+  //       return true;
+  //     } else {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         seriesPasport: "",
+  //       });
+  //       return false;
+  //     }
+  //   }
+
+  //   static numberPasportValidator(numberPasport) {
+  //     if (numberPasport.length !== 6) {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         numberPasport: "номер паспорта должен быть длиной в 6 символов",
+  //       });
+  //       return true;
+  //     } else {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         numberPasport: "",
+  //       });
+  //       return false;
+  //     }
+  //   }
+
+  //   static dateIssueValidator(date) {
+  //     const realDate = new Date(date);
+  //     const now = new Date(Date.now());
+  //     if (Date.parse(realDate) > Date.parse(now)) {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         dateIssue: "неверный формат данных",
+  //       });
+  //       return true;
+  //     } else {
+  //       setValidationsMessages({ ...validationsMessages, dateIssue: "" });
+  //       return false;
+  //     }
+  //   }
+
+  //   static unitCodeValidator(unitCode) {
+  //     if (unitCode.length !== 6) {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         unitCode: "код подразделения должен быть длиной в 6 символов",
+  //       });
+  //       return true;
+  //     } else {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         unitCode: "",
+  //       });
+  //       return false;
+  //     }
+  //   }
+
+  //   static SNILSValidator(SNILS) {
+  //     if (SNILS.length !== 11) {
+  //       setValidationsMessages({
+  //         ...validationsMessages,
+  //         SNILS: "номер СНИЛС должен быть длиной в 11 символов",
+  //       });
+  //       return true;
+  //     } else {
+  //       setValidationsMessages({ ...validationsMessages, SNILS: "" });
+  //       return false;
+  //     }
+  //   }
+  // }
+
+  const runOnSubmitValidations = () => {
+    for (let item in validationFlag) {
+      if (validationFlag[item]) throw new Error("ошибка валидации");
+    }
+  };
+
   const onSubmit = async () => {
     try {
       setLoading(true);
+      runOnSubmitValidations();
       const fields = {
         name: teacherData.name,
         surname: teacherData.surname,
@@ -186,7 +289,7 @@ export const AddPost = () => {
       const _id = isEdditing ? id : data._id;
       navigate(`/posts/${_id}`);
     } catch (err) {
-      alert("Внимание! заполните все поля");
+      alert(err);
     }
   };
 
@@ -356,27 +459,74 @@ export const AddPost = () => {
       <InputGroup className="mb-3">
         <InputGroup.Text>Серия и номер паспорта</InputGroup.Text>
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, seriesPasport: e.target.value })
-          }
+          onChange={(e) => {
+            if (e.target.value.length !== 4) {
+              setValidationsMessages({
+                ...validationsMessages,
+                seriesPasport: "длина серии паспорта должна быть равна 4",
+              });
+              setValidationFlag({ ...validationFlag, seriesPasport: true });
+            } else {
+              setValidationsMessages({
+                ...validationsMessages,
+                seriesPasport: "",
+              });
+              setValidationFlag({ ...validationFlag, seriesPasport: false });
+            }
+            setTeacherData({ ...teacherData, seriesPasport: e.target.value });
+          }}
           value={teacherData.seriesPasport}
           aria-label="serial"
         />
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, numberPasport: e.target.value })
-          }
+          onChange={(e) => {
+            if (e.target.value.length !== 6) {
+              setValidationsMessages({
+                ...validationsMessages,
+                numberPasport: "длина номера паспорта должна быть равна 6",
+              });
+              setValidationFlag({ ...validationFlag, numberPasport: true });
+            } else {
+              setValidationsMessages({
+                ...validationsMessages,
+                numberPasport: "",
+              });
+              setValidationFlag({ ...validationFlag, numberPasport: false });
+            }
+            setTeacherData({ ...teacherData, numberPasport: e.target.value });
+          }}
           value={teacherData.numberPasport}
           aria-label="number"
         />
       </InputGroup>
-
+      <h4>
+        {validationsMessages.seriesPasport} {validationsMessages.numberPasport}
+      </h4>
       <Form.Group controlId="duedate">
         <InputGroup.Text>Дата выдачи</InputGroup.Text>
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, dateIssue: e.target.value })
-          }
+          onChange={(e) => {
+            function $() {
+              const realDate = new Date(e.target.value);
+              const now = new Date(Date.now());
+              console.log(Date.parse(realDate) > Date.parse(now));
+              if (Date.parse(realDate) > Date.parse(now)) {
+                setValidationsMessages({
+                  ...validationsMessages,
+                  dateIssue: "неверный формат данных",
+                });
+                setValidationFlag({ ...validationFlag, dateIssue: true });
+              } else {
+                setValidationsMessages({
+                  ...validationsMessages,
+                  dateIssue: "",
+                });
+                setValidationFlag({ ...validationFlag, dateIssue: false });
+              }
+            }
+            $();
+            setTeacherData({ ...teacherData, dateIssue: e.target.value });
+          }}
           value={teacherData.dateIssue}
           aria-label="number"
           type="date"
@@ -384,19 +534,31 @@ export const AddPost = () => {
           placeholder="Due date"
         />
       </Form.Group>
+      <h4>{validationsMessages.dateIssue}</h4>
       <InputGroup className="mb-3">
         <InputGroup.Text id="inputGroup-sizing-default">
           код подразделения
         </InputGroup.Text>
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, unitCode: e.target.value })
-          }
+          onChange={(e) => {
+            if (e.target.value.length !== 6) {
+              setValidationsMessages({
+                ...validationsMessages,
+                unitCode: "код подразделения должен быть равен 6 символам",
+              });
+              setValidationFlag({ ...validationFlag, unitCode: true });
+            } else {
+              setValidationsMessages({ ...validationsMessages, unitCode: "" });
+              setValidationFlag({ ...validationFlag, unitCode: false });
+            }
+            setTeacherData({ ...teacherData, unitCode: e.target.value });
+          }}
           value={teacherData.unitCode}
           aria-label="Default"
           aria-describedby="inputGroup-sizing-default"
         />
       </InputGroup>
+      <h4>{validationsMessages.unitCode}</h4>
       <InputGroup className="mb-3">
         <InputGroup.Text id="inputGroup-sizing-default">
           кем выдан
@@ -424,15 +586,35 @@ export const AddPost = () => {
       <Form.Group controlId="duedate">
         <InputGroup.Text>дата рождения</InputGroup.Text>
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, bornDate: e.target.value })
-          }
+          onChange={(e) => {
+            function $() {
+              const realDate = new Date(e.target.value);
+              const now = new Date(Date.now());
+
+              if (Date.parse(realDate) > Date.parse(now)) {
+                setValidationsMessages({
+                  ...validationsMessages,
+                  bornDate: "неверный формат данных",
+                });
+                setValidationFlag({ ...validationFlag, bornDate: true });
+              } else {
+                setValidationsMessages({
+                  ...validationsMessages,
+                  bornDate: "",
+                });
+                setValidationFlag({ ...validationFlag, bornDate: false });
+              }
+            }
+            $();
+            setTeacherData({ ...teacherData, bornDate: e.target.value });
+          }}
           value={teacherData.bornDate}
           type="date"
           name="duedate"
           placeholder="Due date"
         />
       </Form.Group>
+      <h4>{validationsMessages.bornDate}</h4>
       <InputGroup className="mb-3">
         <InputGroup.Text id="inputGroup-sizing-default">
           Место рождения
@@ -478,14 +660,25 @@ export const AddPost = () => {
           номер СНИЛС
         </InputGroup.Text>
         <Form.Control
-          onChange={(e) =>
-            setTeacherData({ ...teacherData, SNILS: e.target.value })
-          }
+          onChange={(e) => {
+            if (e.target.value.length !== 11) {
+              setValidationsMessages({
+                ...validationsMessages,
+                SNILS: "длина номера СНИЛСа должна быть равна 11",
+              });
+              setValidationFlag({ ...validationFlag, SNILS: true });
+            } else {
+              setValidationsMessages({ ...validationsMessages, SNILS: "" });
+              setValidationFlag({ ...validationFlag, SNILS: false });
+            }
+            setTeacherData({ ...teacherData, SNILS: e.target.value });
+          }}
           value={teacherData.SNILS}
           aria-label="Default"
           aria-describedby="inputGroup-sizing-default"
         />
       </InputGroup>
+      <h4>{validationsMessages.SNILS}</h4>
       <>
         <Modal show={showEducation} onHide={() => setShowEducation(false)}>
           <h2>Образование</h2>

@@ -5,11 +5,16 @@ import styles from "./Header.module.scss";
 import Container from "@mui/material/Container";
 import { useSelector, useDispatch } from "react-redux";
 import { selectIsAuth, logout } from "../../redux/slices/auth";
-
+import admin from "../../admin.json";
 export const Header = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector(selectIsAuth);
+  const userData = useSelector((state) => state.auth.data);
 
+  React.useEffect(() => {
+    console.log(userData);
+    console.log(admin);
+  }, []);
   const onClickLogout = () => {
     if (window.confirm("вы действительно хотите выйти?")) {
       dispatch(logout());
@@ -27,9 +32,19 @@ export const Header = () => {
           <div className={styles.buttons}>
             {isAuth ? (
               <>
-                <Link to="/add-post">
-                  <Button variant="contained">Создать запись</Button>
-                </Link>
+                {admin.adminEmail === userData.email ? (
+                  <>
+                    {" "}
+                    <Link to="/add-post">
+                      <Button variant="contained">Создать запись</Button>
+                    </Link>
+                    <Link to="/register">
+                      <Button variant="contained">Создать пользователя</Button>
+                    </Link>
+                  </>
+                ) : (
+                  <div></div>
+                )}
                 <Button
                   onClick={onClickLogout}
                   variant="contained"
@@ -42,9 +57,6 @@ export const Header = () => {
               <>
                 <Link to="/login">
                   <Button variant="outlined">Войти</Button>
-                </Link>
-                <Link to="/register">
-                  <Button variant="contained">Создать аккаунт</Button>
                 </Link>
               </>
             )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import clsx from "clsx";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Clear";
@@ -11,7 +11,7 @@ import styles from "./Post.module.scss";
 import { UserInfo } from "../UserInfo";
 import { PostSkeleton } from "./Skeleton";
 import { fetchRemovePost } from "../../redux/slices/posts";
-
+import admin from "../../admin.json";
 export const Post = ({
   _id,
   title,
@@ -35,9 +35,11 @@ export const Post = ({
   numberPasport,
 }) => {
   const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.data);
   if (isLoading) {
     return <PostSkeleton />;
   }
+  console.log(admin.adminEmail === userData.email);
 
   const onClickRemove = () => {
     if (
@@ -49,7 +51,7 @@ export const Post = ({
 
   return (
     <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
-      {
+      {admin.adminEmail === userData.email ? (
         <div className={styles.editButtons}>
           <Link to={`/posts/${_id}/edit`}>
             <IconButton color="primary">
@@ -60,7 +62,10 @@ export const Post = ({
             <DeleteIcon />
           </IconButton>
         </div>
-      }
+      ) : (
+        <div></div>
+      )}
+
       {imageUrl && (
         <img
           className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
